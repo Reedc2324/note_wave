@@ -1,62 +1,75 @@
 import User from "../../(models)/User";
 import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 
-export async function GET(req) {
+// 🔹 POST: Register a new user with a hashed password
+export async function POST(req) {
   try {
-    // GET requests should use query parameters, not request body
-    const { searchParams } = new URL(req.url);
-    const email = searchParams.get("email");
+    // Parse the incoming JSON request body
+    const { email, password, name } = await req.json();
 
-    if (!email) {
-      return NextResponse.json(
-        { message: "Email parameter is required" },
-        { status: 400 }
-      );
+    // Log the incoming request for debugging purposes
+    console.log("Received data for user creation:", { email, password, name });
+
+    // Validate required fields
+    if (!email || !password || !name) {
+      return NextResponse.json({ message: "Email, password, and name are required" }, { status: 400 });
     }
 
-    // Find user by email
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return NextResponse.json({ message: "User already exists" }, { status: 400 });
     }
 
-    return NextResponse.json(user, { status: 200 });
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create the new user in the database
+    await User.create({ email, password: hashedPassword, name });
+
+    return NextResponse.json({ message: "User created successfully" }, { status: 201 });
   } catch (error) {
-    console.error("Error fetching user:", error);
-    return NextResponse.json(
-      { message: "Server error", error: error.message },
-      { status: 500 }
-    );
+    // Log the error for debugging
+    console.error("User creation error:", error);
+
+    // Return a detailed error message to the client
+    return NextResponse.json({ message: "Error creating user", error: error.message }, { status: 500 });
   }
 }
 
-export async function POST(req) {
+// 🔹 POST: Login and authenticate user
+export async function LOGIN(req) {
   try {
-    const body = await req.json();
-    const { email, password } = body;
+    // Parse the incoming JSON request body
+    const { email, password } = await req.json();
 
+    // Log the incoming login data for debugging purposes
+    console.log("Received data for user login:", { email });
+
+    // Validate required fields
     if (!email || !password) {
-      return NextResponse.json(
-        { message: "Email and password are required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: "Email and password are required" }, { status: 400 });
     }
 
-    console.log("Creating user:", { email, password });
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return NextResponse.json({ message: "Invalid email or password" }, { status: 401 });
+    }
 
-    // Create user
-    await User.create({ email, password });
+    // Compare the provided password with the stored hashed password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return NextResponse.json({ message: "Invalid email or password" }, { status: 401 });
+    }
 
-    return NextResponse.json(
-      { message: "User created successfully" },
-      { status: 201 }
-    );
+    return NextResponse.json({ message: "Login successful" }, { status: 200 });
   } catch (error) {
-    console.error("User creation error:", error);
-    return NextResponse.json(
-      { message: "Error creating user", error: error.message },
-      { status: 500 }
-    );
+    // Log the error for debugging
+    console.error("Login error:", error);
+
+    // Return a detailed error message to the client
+    return NextResponse.json({ message: "Error logging in", error: error.message }, { status: 500 });
   }
 }
