@@ -1,13 +1,13 @@
-import React from 'react'
-import UserForm from './(components)/userForm'
+import React from "react";
+import UserForm from "./(components)/userForm";
+import GetForm from "./(components)/getForm";
 
-const HomePage = () => {
+const LoginPage = () => {
   return (
     <div>
-      <UserForm />
-      <h2>Hello</h2>
+      <GetForm />
     </div>
-  )
-}
+  );
+};
 
-export default HomePage
+export default LoginPage;
