@@ -1,53 +1,28 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { SessionProvider, signIn, signOut, useSession } from "next-auth/react";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 
 export default function Login() {
-  const { data: session } = useSession();
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const router = useRouter()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-
-    if (result?.error) {
-      setError(result.error);
-    } else {
-      router.push("/dashboard"); // Redirect after login
-    }
-  };
-
-  // if (session) {
-  //   return (
-  //     <div className="flex flex-col items-center p-5">
-  //       <h2>Welcome, {session.user.email}!</h2>
-  //       <button onClick={() => signOut()} className="bg-red-500 text-white px-4 py-2 rounded mt-3">
-  //         Sign Out
-  //       </button>
-  //     </div>
-  //   );
-  // }
-
+    e.preventDefault()
+    // Here you would typically send a request to your backend to authenticate the user
+    console.log("Login attempt with:", { email, password })
+    // If login is successful, redirect to dashboard
+    router.push("/dashboard")
+  }
 
   return (
-    <SessionProvider>
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    (<div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Log in to NoteWave</CardTitle>
@@ -55,7 +30,6 @@ export default function Login() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {error && <p className="text-red-600 text-sm">{error}</p>}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -64,8 +38,7 @@ export default function Login() {
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+                required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -74,8 +47,7 @@ export default function Login() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+                required />
             </div>
             <Button type="submit" className="w-full">
               Log in
@@ -91,7 +63,7 @@ export default function Login() {
           </p>
         </CardFooter>
       </Card>
-    </div>
-    </SessionProvider>
+    </div>)
   );
 }
+

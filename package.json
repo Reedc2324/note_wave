@@ -21,12 +21,15 @@
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "shadcn": "^2.3.0",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/node": "22.13.0",
     "@types/react": "19.0.8",
     "postcss": "^8",
+    "shadcn-ui": "^0.9.4",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.7.3"
   }

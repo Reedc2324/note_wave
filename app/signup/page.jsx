@@ -16,33 +16,16 @@ export default function Signup() {
   const router = useRouter()
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (password !== confirmPassword) {
-      alert("Passwords don't match");
-      return;
+      alert("Passwords don't match")
+      return
     }
-  
-    try {
-      const response = await fetch("/api/users", {
-        method: "POST",
-        body: JSON.stringify({ email, password, name }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-  
-      const data = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(data.message || "Sign-up failed");
-      }
-  
-      router.push("/dashboard");// Redirect if successful
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  
+    // Here you would typically send a request to your backend to create a new user
+    console.log("Sign up attempt with:", { name, email, password })
+    // If sign up is successful, redirect to dashboard
+    router.push("/dashboard")
+  }
 
   return (
     (<div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -108,3 +91,4 @@ export default function Signup() {
     </div>)
   );
 }
+
