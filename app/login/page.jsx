@@ -7,40 +7,46 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { SessionProvider, signIn, signOut, useSession } from "next-auth/react";
 
 export default function Login() {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // Clear previous errors
+    setError("");
 
-    try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({email, password }),
-      });
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
-      }
-
-      // Redirect if successful
-      router.push("/dashboard");
-    } catch (error) {
-      setError(error.message);
+    if (result?.error) {
+      setError(result.error);
+    } else {
+      router.push("/dashboard"); // Redirect after login
     }
   };
 
+  // if (session) {
+  //   return (
+  //     <div className="flex flex-col items-center p-5">
+  //       <h2>Welcome, {session.user.email}!</h2>
+  //       <button onClick={() => signOut()} className="bg-red-500 text-white px-4 py-2 rounded mt-3">
+  //         Sign Out
+  //       </button>
+  //     </div>
+  //   );
+  // }
+
+
   return (
+    <SessionProvider>
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Card className="w-full max-w-md">
         <CardHeader>
@@ -86,5 +92,6 @@ export default function Login() {
         </CardFooter>
       </Card>
     </div>
+    </SessionProvider>
   );
 }

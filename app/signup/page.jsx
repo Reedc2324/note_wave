@@ -37,7 +37,7 @@ export default function Signup() {
         throw new Error(data.message || "Sign-up failed");
       }
   
-      router.push("/dashboard"); // Redirect if successful
+      router.push("/dashboard");// Redirect if successful
     } catch (error) {
       console.log(error);
     }
@@ -108,4 +108,3 @@ export default function Signup() {
     </div>)
   );
 }
-
